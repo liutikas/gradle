@@ -93,6 +93,7 @@ public class TestEventLogger extends AbstractTestLogger implements TestListener,
             case SUCCESS: return TestLogEvent.PASSED;
             case FAILURE: return TestLogEvent.FAILED;
             case SKIPPED: return TestLogEvent.SKIPPED;
+            case ASSUMPTION_FAILURE: return TestLogEvent.ASSUMPTION_FAILURE;
             default: throw new AssertionError();
         }
     }

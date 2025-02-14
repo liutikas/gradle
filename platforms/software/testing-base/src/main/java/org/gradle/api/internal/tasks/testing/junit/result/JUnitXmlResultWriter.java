@@ -22,6 +22,7 @@ import org.gradle.api.internal.tasks.testing.results.serializable.SerializableFa
 import org.gradle.api.tasks.testing.TestOutputEvent;
 import org.gradle.api.tasks.testing.TestResult;
 import org.gradle.internal.UncheckedException;
+import org.gradle.internal.xml.SimpleMarkupWriter;
 import org.gradle.internal.xml.SimpleXmlWriter;
 
 import java.io.IOException;
@@ -155,7 +156,7 @@ public class JUnitXmlResultWriter {
                     case SUCCESS:
                         return Collections.singleton(success(classId, execution.getId()));
                     case SKIPPED:
-                        return Collections.singleton(skipped(classId, execution.getId()));
+                        return Collections.singleton(skipped(classId, execution.getId(), null));
                     case FAILURE:
                         return failures(classId, execution, allFailed
                             ? execution == firstExecution ? FailureType.FAILURE : FailureType.RERUN_FAILURE
@@ -220,9 +221,11 @@ public class JUnitXmlResultWriter {
             case FAILURE:
                 return failures(classId, methodResult, FailureType.FAILURE);
             case SKIPPED:
-                return Collections.singleton(skipped(classId, methodResult.getId()));
+                return Collections.singleton(skipped(classId, methodResult.getId(), null));
             case SUCCESS:
                 return Collections.singleton(success(classId, methodResult.getId()));
+            case ASSUMPTION_FAILURE:
+                return Collections.singleton(skipped(classId, methodResult.getId(), "OMGSoGOOD"));
             default:
                 throw new IllegalStateException("Unexpected result type: " + methodResult.getResultType());
         }
@@ -299,13 +302,22 @@ public class JUnitXmlResultWriter {
 
 
     private static class TestCaseExecutionSkipped extends TestCaseExecution {
-        TestCaseExecutionSkipped(OutputProvider outputProvider, JUnitXmlResultOptions options) {
+        private final String message;
+        TestCaseExecutionSkipped(
+            OutputProvider outputProvider,
+            JUnitXmlResultOptions options,
+            String message
+        ) {
             super(outputProvider, options);
+            this.message = message;
         }
 
         @Override
         public void write(SimpleXmlWriter writer) throws IOException {
-            writer.startElement("skipped").endElement();
+            writer.startElement("skipped");
+            if (message != null)
+                writer.write(message);
+            writer.endElement();
             writeOutput(writer);
         }
     }
@@ -358,8 +370,8 @@ public class JUnitXmlResultWriter {
         return new TestCaseExecutionSuccess(outputProvider(classId, id), options);
     }
 
-    private TestCaseExecution skipped(long classId, long id) {
-        return new TestCaseExecutionSkipped(outputProvider(classId, id), options);
+    private TestCaseExecution skipped(long classId, long id, String message) {
+        return new TestCaseExecutionSkipped(outputProvider(classId, id), options, message);
     }
 
     private Iterable<TestCaseExecution> failures(final long classId, final TestMethodResult methodResult, final FailureType failureType) {

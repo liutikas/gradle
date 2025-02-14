@@ -29,7 +29,7 @@ public interface TestResult {
      * The final status of a test.
      */
     enum ResultType {
-        SUCCESS, FAILURE, SKIPPED
+        SUCCESS, FAILURE, SKIPPED, ASSUMPTION_FAILURE
     }
 
     /**
@@ -65,6 +65,8 @@ public interface TestResult {
      * @return The exceptions, if any, logged for this test. If none, an empty list is returned.
      */
     List<Throwable> getExceptions();
+
+    // Add a method getAssuptionFailures()
 
     /**
      * Returns the time when this test started execution.

@@ -36,6 +36,11 @@ public enum TestLogEvent {
     SKIPPED,
 
     /**
+     * TODO
+     */
+    ASSUMPTION_FAILURE,
+
+    /**
      * A test has failed. This event gets fired both for atomic and composite tests.
      */
     FAILED,

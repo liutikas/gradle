@@ -155,7 +155,7 @@ public class JUnitTestEventAdapter extends RunListener {
                 executing.clear();
             }
             assert testInternal != null : String.format("Unexpected end event for %s", description);
-            resultType = assumptionFailed.remove(description) ? TestResult.ResultType.SKIPPED : null;
+            resultType = assumptionFailed.remove(description) ? TestResult.ResultType.ASSUMPTION_FAILURE : null;
         }
         resultProcessor.completed(testInternal.getId(), new TestCompleteEvent(endTime, resultType));
     }
