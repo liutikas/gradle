@@ -37,6 +37,7 @@ public class DefaultTestResult implements TestResult, Serializable {
         this(state.resultType, state.getStartTime(), state.getEndTime(), state.testCount, state.successfulCount, state.failedCount, state.failures);
     }
 
+    // TODO(ivy): also pass in the assumption failure exceptions list
     public DefaultTestResult(ResultType resultType, long startTime, long endTime, long testCount, long successfulCount, long failedCount, List<TestFailure> failures) {
         this.resultType = resultType;
         this.startTime = startTime;
@@ -45,6 +46,7 @@ public class DefaultTestResult implements TestResult, Serializable {
         this.successfulCount = successfulCount;
         this.failedCount = failedCount;
         this.failures = failures;
+        // TODO(ivy): set them
     }
 
     @Override
@@ -71,6 +73,8 @@ public class DefaultTestResult implements TestResult, Serializable {
     public List<TestFailure> getFailures() {
         return failures;
     }
+
+    // TODO(ivy): implement getAssumptionFailures
 
     @Override
     public long getStartTime() {

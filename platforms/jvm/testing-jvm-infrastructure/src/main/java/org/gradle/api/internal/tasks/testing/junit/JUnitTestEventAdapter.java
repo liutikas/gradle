@@ -69,6 +69,7 @@ public class JUnitTestEventAdapter extends RunListener {
     private final Clock clock;
     private final Object lock = new Object();
     private final Map<Description, TestDescriptorInternal> executing = new HashMap<Description, TestDescriptorInternal>();
+    // TODO(ivy): keep the exceptions for the assumptions failures too
     private final Set<Description> assumptionFailed = new HashSet<Description>();
 
     public JUnitTestEventAdapter(TestResultProcessor resultProcessor, Clock clock, IdGenerator<?> idGenerator) {
@@ -118,6 +119,7 @@ public class JUnitTestEventAdapter extends RunListener {
     @Override
     public void testAssumptionFailure(Failure failure) {
         synchronized (lock) {
+            // TODO(ivy): Keep track of the failure.getException() similar to testFailure
             assumptionFailed.add(failure.getDescription());
         }
     }
@@ -157,6 +159,7 @@ public class JUnitTestEventAdapter extends RunListener {
             assert testInternal != null : String.format("Unexpected end event for %s", description);
             resultType = assumptionFailed.remove(description) ? TestResult.ResultType.ASSUMPTION_FAILURE : null;
         }
+        // TODO(ivy): pass along the exception (see how failures do it)
         resultProcessor.completed(testInternal.getId(), new TestCompleteEvent(endTime, resultType));
     }
 

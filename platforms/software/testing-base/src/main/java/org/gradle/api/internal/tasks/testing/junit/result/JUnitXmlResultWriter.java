@@ -225,6 +225,7 @@ public class JUnitXmlResultWriter {
             case SUCCESS:
                 return Collections.singleton(success(classId, methodResult.getId()));
             case ASSUMPTION_FAILURE:
+                // TODO(ivy): pass in real exception from the method result, see failure case above.
                 return Collections.singleton(skipped(classId, methodResult.getId(), "OMGSoGOOD"));
             default:
                 throw new IllegalStateException("Unexpected result type: " + methodResult.getResultType());
@@ -302,6 +303,7 @@ public class JUnitXmlResultWriter {
 
 
     private static class TestCaseExecutionSkipped extends TestCaseExecution {
+        // TODO(ivy): store the exception as nullable so we can write it out as the content of the <skip> element
         private final String message;
         TestCaseExecutionSkipped(
             OutputProvider outputProvider,
@@ -316,6 +318,7 @@ public class JUnitXmlResultWriter {
         public void write(SimpleXmlWriter writer) throws IOException {
             writer.startElement("skipped");
             if (message != null)
+                // TODO(ivy): print the exception
                 writer.write(message);
             writer.endElement();
             writeOutput(writer);
@@ -370,6 +373,7 @@ public class JUnitXmlResultWriter {
         return new TestCaseExecutionSuccess(outputProvider(classId, id), options);
     }
 
+    // TODO(ivy): pass in the exception instead of message
     private TestCaseExecution skipped(long classId, long id, String message) {
         return new TestCaseExecutionSkipped(outputProvider(classId, id), options, message);
     }
